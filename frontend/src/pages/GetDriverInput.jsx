@@ -90,7 +90,7 @@ const handleDestinationSelect=(place)=>{
     e.preventDefault();
     try {
       // Make a POST request to store driverInput
-     const res= await axios.post("http://192.168.0.105:5000/driver", driverInput);
+     const res= await axios.post("http://localhost:5000/driver", driverInput);
 
       console.log(driverInput);
       navigate('/locationSharing',{ state: { driversData: res.data } });

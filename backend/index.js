@@ -1,15 +1,15 @@
-const express = require('express');
-const connectToMongo = require('./db');
-const driverRouters = require('./routers/driversRoutes');
-const cors = require('cors');
-const app = express();
-
 const http = require('http');
+const express = require('express');
+const app = express();
+const server = http.createServer(app);
+const connectToMongo = require('./db');
+const cors = require('cors');
+
+const driverRouters = require('./routers/driversRoutes');
 const socketIo = require('socket.io');
 const driver = require('./modules/driver');
 const axios = require('axios');
 
-const server = http.createServer(app);
 
 const { v4: uuidv4 } = require('uuid');
 
@@ -75,7 +75,7 @@ io.on('connection', (socket) => {
     const { roomId, location } = data;
     locations[roomId] = location;
     io.to(roomId).emit('locationUpdate', { roomId, location });
-    console.log(location);
+    console.log('Current Location: ',location);
   });
 
   //store new updated waypoints
@@ -137,7 +137,7 @@ io.on('connection', (socket) => {
     console.log(driverId)
     if (driverId) {
       try {
-        const response = await axios.delete(`http://192.168.0.105:5000/driver/${driverId}`);
+        const response = await axios.delete(`http://localhost:5000/driver/${driverId}`);
         console.log('Delete request sent:', response.data);
       } catch (error) {
         console.error('Error sending delete request:', error);

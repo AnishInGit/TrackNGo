@@ -6,7 +6,7 @@ const driverSchema=new Schema({
         type:String,
         required:true
     },
-     destination:{
+     destination:{ 
         type:String,
         required:true
      },

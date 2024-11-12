@@ -13,7 +13,7 @@ const initialCenter = {
   lng: 87.7386
 };
 
-const socket = io('http://192.168.0.105:5000');
+const socket = io('http://localhost:5000');
 
 const TrackingView = ({ selectedDriverId, destination_lat, destination_lng, source_lat, source_lng }) => {
   const [trackingPosition, setTrackingPosition] = useState(initialCenter);

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const mongoUrl = 'mongodb://localhost:27017/';
-const dbName = 'TravelTrack'; // Specify the database name
+const dbName = 'TravelTrack'; // database name
 
 async function connectToMongo() {
     try {
@@ -9,7 +9,7 @@ async function connectToMongo() {
         console.log('Connected to MongoDB successfully!');
         const db = mongoose.connection;
     
-        // You can now use the 'db' object to interact with your database
+        //can now use the 'db' object to interact with database
     } catch (error) {
         console.error('Error connecting to MongoDB:', error);
     }

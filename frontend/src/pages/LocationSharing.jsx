@@ -11,6 +11,15 @@ import 'leaflet-routing-machine';
 import axios from 'axios';
 import { iconPerson } from './Icon';
 
+// Debounce function to limit frequency of calls
+const debounce = (func, delay) => {
+  let timeout;
+  return (...args) => {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func(...args), delay);
+  };
+};
+
 const LocationSharing = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,7 +34,7 @@ const LocationSharing = () => {
   const socket = useRef(null);
 
   useEffect(() => {
-    socket.current = io('http://192.168.0.105:5000');
+    socket.current = io('http://localhost:5000');
 
     socket.current.on('connect', () => {
       console.log('Socket connected');
@@ -74,7 +83,7 @@ const LocationSharing = () => {
   }, [permissionStatus, isTracking, roomId, driversData._id]);
 
   const handleButtonClick = async () => {
-    const res = await axios.get(`http://192.168.0.105:5000/driver/?_id=${driversData._id}`);
+    const res = await axios.get(`http://localhost:5000/driver/?_id=${driversData._id}`);
     if (res.data && res.data.length > 0) {
       setIsTracking(true);
       socket.current.emit('createroom');
@@ -89,9 +98,19 @@ const LocationSharing = () => {
       lat: wp.latLng.lat,
       lng: wp.latLng.lng,
     }));
-    waypointsRef.current = newWaypoints;
-    socket.current.emit('updateWaypoints', { roomId, waypoints: newWaypoints });
+
+    if (
+      waypointsRef.current.length !== newWaypoints.length ||
+      waypointsRef.current.some((wp, i) => wp.lat !== newWaypoints[i].lat || wp.lng !== newWaypoints[i].lng)
+    ) {
+      waypointsRef.current = newWaypoints;
+      debounceEmitWaypoints();
+    }
   };
+
+  const debounceEmitWaypoints = debounce(() => {
+    socket.current.emit('updateWaypoints', { roomId, waypoints: waypointsRef.current });
+  }, 1000);
 
   const MapViewUpdater = ({ position }) => {
     const map = useMap();
@@ -144,7 +163,6 @@ const LocationSharing = () => {
     }).isRequired,
   };
 
-
   return (
     <div>
       <div className="m-auto mt-8 w-96 lg:w-2/3 h-96 lg:h-[80vh] bg-white border border-gray-200 rounded-lg shadow dark:text-slate-200 dark:bg-gray-800 dark:border-gray-700">
@@ -187,21 +205,3 @@ const LocationSharing = () => {
 };
 
 export default LocationSharing;
-
-
-  //  // Check if lengths are different
-  //  if (waypointsRef.current.length !== newWaypoints.length) {
-  //   waypointsRef.current = newWaypoints;
-  //   socket.current.emit('updateWaypoints', { roomId, waypoints: newWaypoints });
-  //   return;
-  // }
-
-  // // Compare each waypoint
-  // for (let i = 0; i < newWaypoints.length; i++) {
-  //   if (waypointsRef.current[i].lat !== newWaypoints[i].lat ||
-  //       waypointsRef.current[i].lng !== newWaypoints[i].lng) {
-  //     waypointsRef.current = newWaypoints;
-  //     socket.current.emit('updateWaypoints', { roomId, waypoints: newWaypoints });
-  //     return;
-  //   }
-  // }

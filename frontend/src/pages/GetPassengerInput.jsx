@@ -85,7 +85,7 @@ const GetPassengerInput = () => {
   const submit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.get(`http://192.168.0.105:5000/driver/availableDriver`, {
+      const res = await axios.get(`http://localhost:5000/driver/availableDriver`, {
         params: {
           source: passengerInput.source,
           destination: passengerInput.destination,
